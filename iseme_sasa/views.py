@@ -19,5 +19,4 @@ def register(request):
 def offence (request):
     return render(request, 'victim/offence.html')
 
-def perpetrator(request):
-    return render(request, 'victim/perpetrator.html')
+
