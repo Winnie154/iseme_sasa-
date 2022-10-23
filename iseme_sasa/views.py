@@ -7,7 +7,7 @@ def home(request):
     return render(request, 'general/home.html')
 
 def contact (request):
-    return render(request, 'general/contact.html')
+    return render(request, '<h1>contact page<\h1>')
 
 def about(request):
     return render(request, 'general/about.html')
