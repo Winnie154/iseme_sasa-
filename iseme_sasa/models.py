@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from datetime import datetime
 from enum import unique
 from django.db import models
@@ -23,7 +24,7 @@ class User(AbstractUser):
      ]
      phone_number = PhoneNumberField(unique=True, blank=True, null=True)
      #gender = models.CharField(max_length=5000)
-     user_type=models.CharField(max_length=20, choices=user_types)
+     user_type=models.CharField(max_length=20, choices=user_types,null=True)
 
      class Meta:
         ordering=['first_name','last_name']
@@ -88,10 +89,10 @@ class Complaint(models.Model):
 
 class Report(models.Model):
      #complaint = models.ForeignKey(Complaint, related_name='report' on_delete=models.CASCADE)
-     perpetrator_name= models.CharField(max_length=5000)
-     perpetrator_first_name=models.CharField(max_length=5000)
-     perpetrator_last_name=models.TextField(max_length=5000)
-     perpetrator_gender=models.TextField(max_length=5000)
+     perpetrator_name= models.CharField(max_length=5000,null=True)
+     perpetrator_first_name=models.CharField(max_length=5000,null=True)
+     perpetrator_last_name=models.TextField(max_length=5000,null=True)
+     perpetrator_gender=models.TextField(max_length=5000,null=True)
 
      def __str__(self):
       return self.complaint

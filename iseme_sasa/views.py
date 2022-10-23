@@ -12,6 +12,9 @@ def contact (request):
 def about(request):
     return render(request, 'general/about.html')
 
+def register(request):
+    return render(request, 'general/register.html')
+
     
 def offence (request):
     return render(request, 'victim/offence.html')
