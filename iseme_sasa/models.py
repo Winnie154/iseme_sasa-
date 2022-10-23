@@ -1,6 +1,7 @@
 from asyncio.windows_events import NULL
 from datetime import datetime
 from enum import unique
+from sre_constants import IN
 from django.db import models
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.contrib.auth.models import AbstractUser
@@ -42,9 +43,11 @@ class Victim(models.Model):
    """Model representing a system user who's
     a victim"""
    user = models.OneToOneField(User, on_delete=CASCADE, primary_key=True, related_name='victim')
-   age = models.CharField(max_length=100)
-   social_status = models.CharField(max_length=5000)
-   location = models.CharField(max_length=200) # street code
+   
+   dateofBirth = models.DateField(max_length=100,blank=True, null=True)
+   social_status = models.CharField(max_length=5000,blank=True, null=True)
+   location = models.CharField(max_length=200,blank=True, null=True) # street code
+   relation_with_perpetrator =models.CharField(max_length=200,blank=True, null=True)
 
    def __str__(self):
       #return f'{self.user}'
@@ -55,6 +58,7 @@ class Police(models.Model):
    user = models.OneToOneField(User, on_delete=CASCADE, primary_key=True, related_name='police')
    police_id = models.FloatField(max_length=50, blank=True, null=True)
    station_number = models.FloatField(max_length=50,blank=True, null=True)
+   location = models.CharField(max_length=200,blank=True, null=True) # street code
    
 
 
@@ -65,55 +69,67 @@ class Police(models.Model):
 class OffenceCategory(models.Model):
    """Model representing an offence category. 
    Offence categories are added by the Admin in the database. """
-   name = models.CharField(max_length=200, help_text='Select a category (EG: Domestic violence)')
+   name = models.CharField(max_length=200, help_text='Select a category (EG: Sexual Assault)')
    
    def __str__(self):
       return self.name
 
-class Complaint(models.Model):
+class Report(models.Model):
     
-    offence_title = models.CharField(max_length=100)
-    category = models.ForeignKey(
+    
+    offence_category = models.ForeignKey(
       OffenceCategory, 
       on_delete=SET_NULL, 
       null=True, 
-      help_text='Select the type of offence.',
+      help_text='Select the offence category.',
       )
-    datetime = models.DateField(max_length=5000)
-    description = models.CharField(max_length=500)
-    location = models.CharField(max_length=200) # street code
+    datetime = models.DateField(max_length=5000,blank=True,null=True)
+    county = models.CharField(max_length=500,blank=True,null=True)
+    where_committed = models.CharField(max_length=200,blank=True,null=True) # street code
+    any_other_message = models.CharField(max_length=500,blank=True,null=True)
+    Perpetrator_Full_names = models.CharField(max_length=5000,blank=True,null=True)
+    Perpetrator_Phone_Number = models.FloatField(max_length=500,blank=True,null=True)
+    Relationship_with_perpetrator = models.CharField(max_length=500,blank=True,null=True)
+    
+    
+   
+    
+    
 
     def __str__(self):
-      return f'{self.user}: {self.offence_title}'
+      return f'{self.user}: {self.offence_category}'
 
 
-class Report(models.Model):
-     #complaint = models.ForeignKey(Complaint, related_name='report' on_delete=models.CASCADE)
-     perpetrator_name= models.CharField(max_length=5000,null=True)
-     perpetrator_first_name=models.CharField(max_length=5000,null=True)
-     perpetrator_last_name=models.TextField(max_length=5000,null=True)
-     perpetrator_gender=models.TextField(max_length=5000,null=True)
 
-     def __str__(self):
-      return self.complaint
+
+
+     
 
 
     
-class VictimImageUpload(models.Model):
-   """Model representing a victim's image upload"""
-   victim = models.ForeignKey(User,related_name='victim_image', on_delete=models.CASCADE)
-   image = models.ImageField(upload_to='vendor_img_uploads')
-   caption = models.CharField(max_length=500)
 
-   def __str__(self):
-      return f"{self.victim.user}'s image"
 
-class PoliceImageUpload(models.Model):
-   """Model representing a police's image upload"""
+class PoliceProfileImageUpload(models.Model):
+   """Model representing a police's profile picture upload"""
    police = models.ForeignKey(User,related_name='police_image', on_delete=models.CASCADE)
    image = models.ImageField(upload_to='police_img_uploads')
-   caption = models.CharField(max_length=500)
+   
 
    def __str__(self):
       return f"{self.police.user}'s image" 
+
+   
+
+
+   class TrackStatus(models.Model):
+    """Model representing the tracking update"""
+   PENDING = 'Pending'
+   COMPLETED = 'Completed'
+   IN_PROGRESS = 'In_progress'
+
+   STATUS_CHOICES = [
+      (PENDING, 'Pending'),
+      (COMPLETED, 'Completed'),
+      (IN_PROGRESS, 'In_Progress'),
+   ]
 
